@@ -1,0 +1,30 @@
+.ly-layout-wraper {
+  height: 100%;
+  .ly-logo {
+    color: #ffffff;
+    padding: 15px 0;
+    font-size: 16px;
+    text-align: center;
+  }
+  .ly-header {
+    background: #fff;
+    padding: 0 24px;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+  }
+  .ly-sider {
+    overflow: auto;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background:rgba(255,255,255,.3);
+    }
+    &::-webkit-scrollbar-track {
+      border-radius: 5px;
+      background:rgba(255,255,255,.2);
+    }
+  }
+}

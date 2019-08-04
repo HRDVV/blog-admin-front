@@ -1,0 +1,17 @@
+html,body {
+  height: 100%;
+  #root {
+    height: 100%;
+    .table-wraper {
+      .ant-table-thead th{
+        padding: 6px;
+      }
+      .ant-table-row td{
+        padding: 8px;
+      }
+    }
+    .form-wraper {
+      padding: 24px;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+.login-wraper {
+  height: 100%;
+  overflow: hidden;
+  background: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path d="M0 0h1v1H0zM1 1h1v1H1z"/></svg>'),
+  url('../../assets//images//bg.jpeg') no-repeat;
+  background-size: 1px, cover;
+  .login-title {
+    color: #1890ff;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 500;
+    // text-shadow: -1px -1px 3px rgba(0, 0, 0, 1),
+    // 1px 1px 3px rgba(255, 255, 255, 1);
+    padding-top: 20px;
+    font-family: '微软雅黑'
+  }
+  .login-form {
+    width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .6);
+    margin: 150px auto;
+    padding: 10px 20px 5px;
+    background-color: rgba(0,0,0,.3)
+  }
+}
