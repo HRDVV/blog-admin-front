@@ -1,36 +1,37 @@
 import React, { Fragment } from 'react'
-import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom'
-import { message } from 'antd'
+import { HashRouter as Router, Route, Redirect, Switch, Prompt } from 'react-router-dom'
 import Login from './pages/login/index'
 import Layout from './layout/BaseLayout/index'
 import ArticleManage from './pages/article-manage/index'
 import Article from './pages/article-manage/artilcle'
 import { connect } from 'react-redux'
-import { _changeLoginStatusAction } from './store/action'
+import { _changeToken } from './store/module/user/action'
 import { api } from './server/index'
 import './App.scss'
 
 class App extends React.Component {
 
-  componentDidMount() {
-    this._checkIsLogin()
-  }
-
-  _checkIsLogin() {
-    api.login({}).then(res => {
-      if (res.success) {
-        this.props.changeLoginStatus(!!res.data)
-      } else {
-        message.error(res.message)
-      }
-    }, err => {
-      console.error(err)
-    })
-  }
-
   render() {
     return (
       <Router>
+        <Prompt message={
+          async(location) => {
+            try {
+              let res = await api.isLogin()
+              if (res.success) {
+                return true
+              } else {
+                if (res.code === 401) {
+                  this.props.changeToken(null)
+                }
+                return false
+              }
+            } catch(e) {
+              console.error(e)
+              return false
+            }
+          }
+        }/>
         <Switch>
           {
             !this.props.isLogin
@@ -38,15 +39,16 @@ class App extends React.Component {
             (
               <Fragment>
                 <Route path="/login" component={Login} exact />
-                <Redirect from="*" to="login" />
+                <Redirect from="*" to="/login" exact />
               </Fragment>
             )
             :
             (
             <Layout>
-              <Redirect from="/" to="/article" exact />
+              <Route path="/" component={ ArticleManage } exact />
               <Route path="/article" component={ ArticleManage } exact />
-              <Route path="/article/:status" component={ Article } exact />
+              <Route path="/article/add" component={ Article } exact />
+              <Route path="/article/edit/:id" component={ Article } exact />
             </Layout>
             )
           }
@@ -58,14 +60,14 @@ class App extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    isLogin: state.isLogin
+    isLogin: !!state.user.token
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    changeLoginStatus(data) {
-      const action = _changeLoginStatusAction(data)
+    changeToken(data) {
+      const action = _changeToken(data)
       dispatch(action)
     }
   }

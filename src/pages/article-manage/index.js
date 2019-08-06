@@ -1,19 +1,12 @@
 import React, { Component, Fragment } from 'react'
-import { Button, Form, Input, DatePicker, Table, Upload, Icon } from 'antd'
+import { Button, Form , Table, Upload, Icon, message, Tag } from 'antd'
+import { getToken } from '../../utils/index'
+import { api } from '../../server/index'
 import './index.scss'
 
 const { Item } = Form
 
-const dataSource = [
-  {
-    id: 1,
-    articleName: '2345'
-  },
-  {
-    id: 2,
-    articleName: '23456'
-  }
-]
+const colors = ['#f50', '#2db7f5', '#87d068', '#108ee9']
 
 class ArticleManage extends Component {
   constructor(props) {
@@ -22,12 +15,14 @@ class ArticleManage extends Component {
       articleName: null,
       articleTime: null,
       current: 1,
-      total: 0
+      total: 0,
+      dataSource: [],
+      loading: false
     }
     this.columns = [
       {
         title: '文章名称',
-        dataIndex: 'articleName'
+        dataIndex: 'title'
       },
       {
         title: '作者',
@@ -35,11 +30,16 @@ class ArticleManage extends Component {
       },
       {
         title: '分类',
-        dataIndex: 'category'
+        dataIndex: 'categories',
+        render: (text, record, index) => {
+          return record.categories.split(',').map((item, index) => {
+            return <Tag key={index} color={colors[Math.floor(Math.random() * 5)]}>{ item }</Tag>
+          })
+        }
       },
       {
         title: '撰写时间',
-        dataIndex: 'articleTime'
+        dataIndex: 'updateTime'
       },
       {
         title: '操作',
@@ -51,34 +51,38 @@ class ArticleManage extends Component {
               style={{ marginRight: '5px' }}
               onClick={ () => { this._editArticle(record) } }
             >编辑</Button>
-            <Button type="danger">删除</Button>
+            <Button type="danger" onClick={
+              () => {
+                this._delBlog(record.id)
+              }
+            }>删除</Button>
           </Fragment>
         )
       }
     ]
-    this._articleNameChange = this._articleNameChange.bind(this)
-    this._articleTimeChange = this._articleTimeChange.bind(this)
+    // this._articleNameChange = this._articleNameChange.bind(this)
+    // this._articleTimeChange = this._articleTimeChange.bind(this)
     this._handleSearch = this._handleSearch.bind(this)
-    this._currentPageChange = this._currentPageChange.bind(this)
+    // this._currentPageChange = this._currentPageChange.bind(this)
     this._createArticle = this._createArticle.bind(this)
   }
 
-  _articleNameChange(e) {
-    let value = e.target.value
-    this._setState('articleName', value)
-  }
+  // _articleNameChange(e) {
+  //   let value = e.target.value
+  //   this._setState('articleName', value)
+  // }
 
-  _articleTimeChange(val) {
-    this._setState('articleTime', val)
-  }
+  // _articleTimeChange(val) {
+  //   this._setState('articleTime', val)
+  // }
 
   _handleSearch() {
-    
+    this._getBlogList()
   }
 
-  _currentPageChange(page, pageSize) {
-    console.log(page, pageSize)
-  }
+  // _currentPageChange(page, pageSize) {
+  //   console.log(page, pageSize)
+  // }
 
   _createArticle() {
     this.props.history.push({
@@ -88,7 +92,19 @@ class ArticleManage extends Component {
 
   _editArticle(record) {
     this.props.history.push({
-      pathname: `/article/edit?id=${record.id}`
+      pathname: `/article/edit/${record.id}`,
+    })
+  }
+
+  _delBlog = (id) => {
+    api.delBlog({ id }).then(res => {
+      if (res.success) {
+        this._getBlogList()
+      } else {
+        message.error(res.message)
+      }
+    }, err => {
+      console.error(err)
     })
   }
 
@@ -99,6 +115,30 @@ class ArticleManage extends Component {
       }
     })
   }
+  _getBlogList() {
+    this.setState({ loading: true })
+    api.getBlogList({}).then(res => {
+      this.setState({ loading: false })
+      if (res.success) {
+        this.setState(() => (
+          {
+            dataSource: res.data,
+            total: res.data.length
+          }
+        ))
+      } else {
+        this.setState({ loading: false })
+        message.error(res.message)
+      }
+    }, err => {
+      this.setState({ loading: false })
+      console.error(err)
+    })
+  }
+
+  componentDidMount() {
+    this._getBlogList()
+  }
 
   render() {
     return (
@@ -107,39 +147,28 @@ class ArticleManage extends Component {
           layout="inline"
           className="form-wraper"
         >
-          <Item label="文章名称">
-            <Input
-              placeholder="请输入文章名称"
-              value={ this.state.articleName }
-              onChange={ this._articleNameChange }
-            />
-          </Item>
-          <Item label="撰写时间">
-            <DatePicker
-              placeholder="请选择撰写时间"
-              value={ this.state.articleTime }
-              onChange={ this._articleTimeChange }
-            />
-          </Item>
           <Item>
-            <Button type="primary" onClick={ this._handleSearch }>
-              查询
-            </Button>
-          </Item>
-          <Item>
-            <Button onClick={ this._createArticle }>
+            <Button 
+              type="primary"
+              onClick={ this._createArticle }
+            >
               新建文章
             </Button>
           </Item>
           <Item>
             <Upload 
-              action="//jsonplaceholder.typicode.com/posts/"
+              action={`/blog/upload?token=${getToken()}`}
               beforeUpload={(file) => {
                 return true
               }}
               onChange={({ file }) => {
-                console.log(file.status)
-                // console.log(file)
+                if (file.status === 'done') {
+                  if (file.response.success) {
+                    this._getBlogList()
+                  } else {
+                    message.error(file.response.message)
+                  }
+                }
               }}
               showUploadList={false}
             >
@@ -151,16 +180,12 @@ class ArticleManage extends Component {
         </Form>
         <Table
           bordered
+          loading={this.state.loading}
           rowKey={ (data) => data.id }
           className="table-wraper"
           columns={ this.columns }
-          dataSource={ dataSource }
-          pagination={{ 
-            current: this.state.current,
-            total: this.state.total,
-            pageSize: 20,
-            onChange: this._currentPageChange
-          }}
+          dataSource={ this.state.dataSource }
+          pagination={false}
         />
       </Fragment>
     )

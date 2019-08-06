@@ -1,52 +1,24 @@
 import React, { Component } from 'react'
-import { Layout, Menu, Icon, Avatar, Button, message } from 'antd'
+import { Layout, Menu, Icon, Avatar, Button } from 'antd'
 import { connect } from 'react-redux'
-import { api } from '../../server/index'
-import { _layoutAction } from '../../store/action'
+import { _changeToken } from '../../store/module/user/action'
 import './index.scss'
 
 const { Header, Sider, Content } = Layout
 
 class BaseLayout extends Component {
   state = {
-    collapsed: false,
-    userInfo: {
-      userName: null,
-      userId: null
-    }
+    collapsed: false
   }
 
   _layout = () => {
-    this.props.layoutDispatch()
-  }
-
-  _login = () => {
-    this.props.history.push('/login')
-  }
-
-  getUserInfo() {
-    api.login({}).then(res => {
-      if (res.success) {
-        console.log(res.data)
-        this.setState({
-          userInfo: res.data
-        })
-      } else {
-        message.error(res.message)
-      }
-    }, err => {
-      console.error(err)
-    })
+    this.props.changeToken(null)
   }
 
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
     })
-  }
-
-  componentDidMount() {
-    this.getUserInfo()
   }
 
   render() {
@@ -77,11 +49,11 @@ class BaseLayout extends Component {
             />
               {
                 (() => {
-                  if (this.state.userInfo.userId) {
+                  if (this.props.userInfo.aud) {
                     return (
                       <div>
                         <Avatar style={{ backgroundColor: '#7265e6', verticalAlign: 'middle' }} size="large">
-                          { this.state.userInfo.userName }
+                          { this.props.userInfo.aud.slice(0,1).toUpperCase() }
                         </Avatar>
                         <Button type="link" onClick={ this._layout }>退出</Button>
                       </div>
@@ -89,7 +61,7 @@ class BaseLayout extends Component {
                   } else {
                     return (
                       <div>
-                        <Button type="link" onClick={ this._login }>请登录</Button>
+                        <Button type="link">未登录</Button>
                       </div>
                     )
                   }
@@ -111,14 +83,19 @@ class BaseLayout extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    userInfo: JSON.parse(state.user.userInfo)
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    layoutDispatch() {
-      const action = _layoutAction()
+    changeToken(data) {
+      const action = _changeToken(data)
       dispatch(action)
     }
   }
 }
 
-export default connect(null, mapDispatchToProps)(BaseLayout)
+export default connect(mapStateToProps, mapDispatchToProps)(BaseLayout)

@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Form, Icon, Input, Button, message } from 'antd'
 import { connect } from 'react-redux'
+import { Base64 } from 'js-base64'
 import { api } from '../../server/index'
-import { _changeLoginStatusAction } from '../../store/action'
+import { _changeToken, _setUserInfo } from '../../store/module/user/action'
 import './index.scss'
 
 class NormalLoginForm extends React.Component {
@@ -10,7 +11,7 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.props.login()
+        this.props.login(values)
       }
     })
   }
@@ -21,9 +22,10 @@ class NormalLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <p className="login-title">博客后台管理系统</p>
         <Form.Item>
-          {getFieldDecorator('username', {
+          {getFieldDecorator('name', {
             rules: [
-              { required: true, message: '用户名不能为空' }
+              { required: true, message: '用户名不能为空' },
+              { min: 2, max: 8, message: '请输入2-8个字符' }
             ],
           })(
             <Input
@@ -34,7 +36,10 @@ class NormalLoginForm extends React.Component {
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: '密码不能为空' }],
+            rules: [
+              { required: true, message: '密码不能为空' },
+              { min: 5, max: 12, message: '请输入5-12个字符' }
+            ],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -53,7 +58,7 @@ class NormalLoginForm extends React.Component {
             >
               登录
             </Button>
-            <Button type="link">现在注册?</Button>
+            {/* <Button type="link">现在注册?</Button> */}
           </div>
         </Form.Item>
       </Form>
@@ -68,7 +73,9 @@ class Login extends Component {
   _login = (params) => {
     api.login(params).then(res => {
       if (res.success) {
-        this.props.changeLoginStatus(true)
+        let userInfo = Base64.decode(res.data.split('.')[1])
+        this.props.setUserInfo(userInfo)
+        this.props.changeToken(res.data)
         this.props.history.push('/article')
       } else {
         message.error(res.message)
@@ -89,8 +96,12 @@ class Login extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    changeLoginStatus(data) {
-      const action = _changeLoginStatusAction(data)
+    setUserInfo(data) {
+      const action = _setUserInfo(data)
+      dispatch(action)
+    },
+    changeToken(data) {
+      const action = _changeToken(data)
       dispatch(action)
     }
   }

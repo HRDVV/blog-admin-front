@@ -1,2 +1,0 @@
-export const LAYOUT_ACTION = 'LAYOUT_ACTION'
-export const LOGIN_ACTION = 'LOGIN_ACTION'
