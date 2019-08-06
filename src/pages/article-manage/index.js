@@ -43,7 +43,7 @@ class ArticleManage extends Component {
       },
       {
         title: '操作',
-        width: 200,
+        width: 250,
         render: (text, record, index) => (
           <Fragment>
             <Button 
@@ -56,6 +56,11 @@ class ArticleManage extends Component {
                 this._delBlog(record.id)
               }
             }>删除</Button>
+            <Button style={{marginLeft: '5px'}}>
+              <a 
+                href={`http://114.67.66.81:8081/blog/download?id=${record.id}&token=${getToken()}`} 
+                style={{color: 'inherit'}}>下载</a>
+            </Button>
           </Fragment>
         )
       }
@@ -157,7 +162,7 @@ class ArticleManage extends Component {
           </Item>
           <Item>
             <Upload 
-              action={`/blog/upload?token=${getToken()}`}
+              action={`http://114.67.66.81:8081/blog/upload?token=${getToken()}`}
               beforeUpload={(file) => {
                 return true
               }}

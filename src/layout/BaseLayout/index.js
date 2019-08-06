@@ -32,7 +32,7 @@ class BaseLayout extends Component {
           collapsible
           collapsed={this.state.collapsed}
         >
-          <div className="ly-logo">{ this.state.collapsed ? 'admin' : '博客后台管理系统' }</div>
+          <div className="ly-logo">{ this.state.collapsed ? this.props.userInfo.aud : '博客后台管理系统' }</div>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
             <Menu.Item key="1">
               <Icon type="snippets" />
