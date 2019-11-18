@@ -68,8 +68,9 @@ class ArticleForm extends Component {
     this.setState({ loading: false })
     if (res.success) {
       message.success('保存成功')
-      this.props.history.push('/article')
+      // this.props.history.push('/article')
     } else {
+      this.setState({ loading: false })
       message.error(res.message)
     }
   }
@@ -102,15 +103,15 @@ class ArticleForm extends Component {
                     required: true,
                     message: '文章分类不能为空'
                   },
-                  {
-                    validator: (rule, value, callback) => {
-                      if (!/^[0-9a-zA-Z,]+$/.test(value)) {
-                        callback(new Error('只能包含数字、字母和英文逗号'))
-                      } else {
-                        callback()
-                      }
-                    }
-                  }
+                  // {
+                  //   validator: (rule, value, callback) => {
+                  //     if (!/^[0-9a-zA-Z\w,]+$/.test(value)) {
+                  //       callback(new Error('只能包含数字、字母和英文逗号'))
+                  //     } else {
+                  //       callback()
+                  //     }
+                  //   }
+                  // }
                 ]
               })(<Input placeholder="请输入文章分类" />)
             }

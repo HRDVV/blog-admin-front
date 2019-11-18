@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Button, Form , Table, Upload, Icon, message, Tag } from 'antd'
+import { Button, Form , Table, Upload, Icon, message, Tag, Popconfirm } from 'antd'
 import { getToken } from '../../utils/index'
 import { api } from '../../server/index'
 import './index.scss'
@@ -51,11 +51,14 @@ class ArticleManage extends Component {
               style={{ marginRight: '5px' }}
               onClick={ () => { this._editArticle(record) } }
             >编辑</Button>
-            <Button type="danger" onClick={
-              () => {
-                this._delBlog(record.id)
-              }
-            }>删除</Button>
+            <Popconfirm 
+              title="Are you sure？" 
+              okText="是" 
+              cancelText="否"
+              onConfirm={this._delBlog.bind(this, record.id)}
+            >
+              <Button type="danger">删除</Button>
+            </Popconfirm>
             <Button style={{marginLeft: '5px'}}>
               <a 
                 href={`http://114.67.66.81:8081/blog/download?id=${record.id}&token=${getToken()}`} 

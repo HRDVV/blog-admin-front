@@ -11,7 +11,7 @@ export default [
     path: '/',
     component: ArticleManage,
     auth: true
-  }
+  },
   {
     path: '/article',
     component: ArticleManage,

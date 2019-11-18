@@ -5,6 +5,7 @@ import { jumpLoginpage, getToken } from '../../utils/index'
 const isDev = process.env.NODE_ENV === 'development'
 
 const instance = axios.create({
+  timeout: 5000,
   baseURL: isDev ? '/' : 'http://114.67.66.81:8081',
   headers: {'X-Requested-With': 'XMLHttpRequest'}
 })
