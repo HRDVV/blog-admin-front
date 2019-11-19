@@ -72,7 +72,8 @@ class BaseLayout extends Component {
           <Content
             style={{
               margin: '24px 12px',
-              background: '#fff'
+              background: '#fff',
+              overflow: 'auto'
             }}
           >
             { this.props.children }
