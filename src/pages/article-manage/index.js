@@ -61,7 +61,7 @@ class ArticleManage extends Component {
             </Popconfirm>
             <Button style={{marginLeft: '5px'}}>
               <a 
-                href={`http://114.67.66.81:8081/blog/download?id=${record.id}&token=${getToken()}`} 
+                href={`http://152.136.114.144/blog/blog/download?id=${record.id}&token=${getToken()}`} 
                 style={{color: 'inherit'}}>下载</a>
             </Button>
           </Fragment>
@@ -165,7 +165,7 @@ class ArticleManage extends Component {
           </Item>
           <Item>
             <Upload 
-              action={`http://114.67.66.81:8081/blog/upload?token=${getToken()}`}
+              action={`http://152.136.114.144/blog/blog/upload?token=${getToken()}`}
               beforeUpload={(file) => {
                 return true
               }}

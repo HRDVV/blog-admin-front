@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV === 'development'
 
 const instance = axios.create({
   timeout: 5000,
-  baseURL: isDev ? '/' : 'http://114.67.66.81:8081',
+  baseURL: isDev ? '/' : 'http://152.136.114.144/blog',
   headers: {'X-Requested-With': 'XMLHttpRequest'}
 })
 
